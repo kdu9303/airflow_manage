@@ -1,0 +1,38 @@
+### Vim ###
+[._]*.s[a-w][a-z]
+[._]s[a-w][a-z]
+*.un~
+Session.vim
+.netrwhist
+*~
+*.db
+airflow.cfg
+
+### SublimeText ###
+# cache files for sublime text
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+
+# workspace files are user-specific
+*.sublime-workspace
+
+# project files should be checked into the repository, unless a significant
+# proportion of contributors will probably not be using SublimeText
+# *.sublime-project
+
+# sftp configuration file
+sftp-config.json
+
+# Python
+__pycache__
+
+# log dir 
+[Ll]ogs/
+
+# large dependency files
+docker/dependencies/**
+
+docker/dependencies/instantclient_21_3/libociei.so
+docker/dependencies/instantclient_21_3/libclntsh.so.21.1
+.git/objects/pack/pack-d50a7314bac3fa404272c3af938ca6dae1c43614.pack

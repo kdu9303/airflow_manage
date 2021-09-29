@@ -1,0 +1,36 @@
+# SOURCE: https://github.com/kdu9303/docker-airflow
+
+# BUILD: docker build --rm -t kdu9303/docker-airflow:version .
+# git clone https://github.com/kdu9303/docker-airflow.git . or directory
+
+# push:sudo docker push kdu9303/docker-airflow:version
+
+# update version: docker build --tag kdu9303/docker-airflow:0.0.2 .
+# push:sudo docker push kdu9303/docker-airflow:0.0.2
+# docker-compose down && docker-compose up -d
+
+# latest version: 0.0.5
+
+FROM apache/airflow:2.1.4-python3.8
+USER root
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
+         vim \       
+  && apt-get install -y --no-install-recommends libaio1 \   
+  && apt-get autoremove -yqq --purge \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
+
+# instanct client 
+# TNS_ADMIN 변수 체크할 것
+# sqlnet.ora DIRECTORY 확인
+COPY dependencies/instantclient_21_3 ./dependencies/instantclient_21_3
+ENV LD_LIBRARY_PATH=/opt/airflow/dependencies/instantclient_21_3
+ENV PATH "$PATH:${LD_LIBRARY_PATH}"
+
+USER airflow
+
+COPY requirements.txt /requirements.txt
+RUN pip install --no-cache-dir --user -r /requirements.txt
+
+
