@@ -96,8 +96,5 @@ LEFT OUTER JOIN DW.협력병의원 b ON a.병원별기관코드 = b.병원별기
                                AND a.협력병원코드 = b.협력병의원코드
 LEFT OUTER JOIN DW.협력병의원의사 c ON a.병원별기관코드 = c.INSTCD
                                   AND a.협력의사코드 = c.COOPDRCD 
+WHERE a.진료일자 between to_date('20210801','YYYYMMDD') and to_date('20210802','YYYYMMDD')
 
-
-;
-
---GRANT SELECT ON DW.M_진료협력 TO dwu01;

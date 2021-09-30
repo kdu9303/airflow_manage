@@ -28,6 +28,10 @@ COPY dependencies/instantclient_21_3 ./dependencies/instantclient_21_3
 ENV LD_LIBRARY_PATH=/opt/airflow/dependencies/instantclient_21_3
 ENV PATH "$PATH:${LD_LIBRARY_PATH}"
 
+# google_service_account 임데드 시킬것
+#  /home/ubuntu/keyfiles/google_service_account_key.json
+
+
 USER airflow
 
 COPY requirements.txt /requirements.txt

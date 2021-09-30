@@ -33,6 +33,5 @@ __pycache__
 # large dependency files
 docker/dependencies/**
 
-docker/dependencies/instantclient_21_3/libociei.so
-docker/dependencies/instantclient_21_3/libclntsh.so.21.1
-.git/objects/pack/pack-d50a7314bac3fa404272c3af938ca6dae1c43614.pack
+# google api key
+google_service_account_key.json
