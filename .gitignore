@@ -30,8 +30,9 @@ __pycache__
 # log dir 
 [Ll]ogs/
 
-# large dependency files
+# large files
 docker/dependencies/**
+data/
 
 # google api key
 google_service_account_key.json

@@ -1,4 +1,5 @@
 import logging
+import time
 from datetime import datetime, timedelta
 # DAG object
 from airflow import DAG
@@ -8,12 +9,11 @@ from airflow.models import Variable
 from airflow.operators.python import PythonOperator
 # airflow에 저장된 변수 불러오기
 # from airflow.models import Variable
-from scripts.call_data import ADW_connection
+from scripts.call_data import ADW_connection_cx_oracle
 
 
 # ADW Connection setup
-con = ADW_connection()
-cur = con.cursor()
+con = ADW_connection_cx_oracle()
 
 
 # 업데이트, MERGE, INSERT작업용
@@ -22,20 +22,26 @@ def update_sql_results(sql_path, sql_name):
     logging.info("데이터를 호출합니다. from create_sql_results()")
 
     try:
-        query = con.get_query_from_file(sql_path, sql_name)
-
-        # 오라클에서는 bind 변수를 숫자로 넘겨줘야함
-        # bind 변수 정의
-        args = {
-            "1": str(Variable.get("START_DATE")),  # 시작일자
-            "2": str(Variable.get("END_DATE"))  # 종료일자
-              }
-
-        cur.execute(query, args)    
-        con.commit()
-        # cur.close()
-        # con.close()
         
+        with con.cursor() as cur:        
+
+            startTime = time.time()
+
+            query = con.get_query_from_file(sql_path, sql_name)
+
+            # 오라클에서는 bind 변수를 숫자로 넘겨줘야함
+            args = {
+                # "1": str(Variable.get("START_DATE")),  # 시작일자
+                # "2": str(Variable.get("END_DATE"))  # 종료일자
+                "1": '20210108',  # 시작일자
+                "2": '20210108'  # 종료일자
+                }
+
+            cur.execute(query, args)    
+            con.commit()
+
+            endTime = time.time()
+            logging.info(f'실행 시간: {round(endTime-startTime,2)}초')
         logging.info("작업 완료")
 
     except Exception as e:
@@ -45,22 +51,30 @@ def update_sql_results(sql_path, sql_name):
 # SELECT 작업용
 def select_sql_results(sql_path, sql_name):
     logging.info("데이터를 호출합니다. select_sql_results()")
+
     try:
-        query = con.get_query_from_file(sql_path, sql_name)
+        
+        with con.cursor() as cur:
 
-        # 오라클에서는 bind 변수를 숫자로 넘겨줘야함
-        # bind 변수 정의
-        args = {
-            "1": str(Variable.get("START_DATE")),  # 시작일자
-            "2": str(Variable.get("END_DATE"))  # 종료일자
-              }
+            startTime = time.time()
 
-        data = cur.execute(query, args).fetchall()
-        # cur.close()
-        # con.close()
+            query = con.get_query_from_file(sql_path, sql_name)
 
-        logging.info(data[:4])
+            # 오라클에서는 bind 변수를 숫자로 넘겨줘야함
+            args = {
+                # "1": str(Variable.get("START_DATE")),  # 시작일자
+                # "2": str(Variable.get("END_DATE"))  # 종료일자
+                "1": '20210108',  # 시작일자
+                "2": '20210108'  # 종료일자
+                }
 
+            data = cur.execute(query, args).fetchall()
+
+            logging.info(data[:1])
+
+            endTime = time.time()
+
+            logging.info(f'실행 시간: {round(endTime-startTime,2)}초')
     except Exception as e:
         logging.info(f'<<오류 발생>> -> {e}')
 
@@ -74,7 +88,7 @@ default_args = {
     'retry_delay': timedelta(minutes=1)
 }
 
-with DAG('query_example_1',
+with DAG('merge_update_query_example_1',
          description='ADW에 테이블 조작하는 DAG입니다.',
          start_date=datetime(2021, 10, 5),
          max_active_runs=1,
@@ -98,3 +112,4 @@ with DAG('query_example_1',
                                            }
                                  )
     merge_task >> select_task
+

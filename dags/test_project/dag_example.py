@@ -9,7 +9,7 @@ try:
     from airflow.operators.bash import BashOperator 
     from airflow.operators.python import PythonOperator
     from airflow.utils.dates import days_ago    
-    print("모든 패키지 로드 완료")
+    
 except Exception as e:
     print(f"Error {e}")
 

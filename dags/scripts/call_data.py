@@ -1,12 +1,14 @@
-# from dataclasses import dataclass
 import cx_Oracle
 import logging
 from airflow.models import Variable
+# Dataframe 업로드용
+# from sqlalchemy import types, create_engine
+# from pandas.io.sql import to_sql, read_sql
 
 """ 모든 입력 파라미터는 AIRFLOW VARIABLE에서 가져오는 것으로 한다."""
 
 
-class ADW_connection(cx_Oracle.Connection):
+class ADW_connection_cx_oracle(cx_Oracle.Connection):
     """ADW initialization."""
 
     def __init__(self, *args) -> None:
@@ -18,10 +20,14 @@ class ADW_connection(cx_Oracle.Connection):
 
         # cx_oralce version check
         logging.info(f'cx_Oracle Version: {cx_Oracle.__version__}')
+        
+        try:
+            cx_Oracle.init_oracle_client(config_dir=self._tns_admin)
+        except Exception as e:
+            logging.info(f"원인: {e}")
 
-        cx_Oracle.init_oracle_client(config_dir=self._tns_admin)
-
-        super(ADW_connection, self).__init__(self._user, self._password, self._dsn)
+        super(ADW_connection_cx_oracle, self).__init__(self._user, self._password, self._dsn)
+        
 
     def cursor(self):
         return MyCursor(self)
@@ -50,8 +56,43 @@ class MyCursor(cx_Oracle.Cursor):
             logging.info(f"원인: {e}")
 
 
+# class ADW_connection_sqlalchemy:
 
+#     def __init__(self) -> None:
 
+#         self._tns_admin: str = Variable.get("TNS_ADMIN")
+#         self._user: str = Variable.get("ADW_USER")
+#         self._password: str = Variable.get("ADW_PASSWORD")
+#         self._dsn: dict = Variable.get("ADW_SID")
+
+#         uri = f'oracle+cx_oracle://{self._user}:{self._password}@{self._dsn}'
+#         self._conn = create_engine(uri) 
+
+#     def SQL_to_dataframe(self, sql):
+#         return read_sql(sql, con=self._conn)  
+
+#     def dataframe_to_table(self, df, table_name, if_exists='replace'):
+#         """
+#          - 함수 설명 - 
+#         1. object 타입을 VARCHAR형으로 변경하여 업로드하여 속도 개선
+#         2. VARCHAR(df[c].str.len().max()) ->  VARCHAR(가장 긴행의 길이로 설정)
+#         3. VARCHAR는 오라클에서 자동으로 VARCHAR2로 인식
+#         """
+#         try:
+#             dtyp = {c:types.VARCHAR(df[c].str.len().max() if df[c].str.len().max() > 0 else 1) 
+#                     for c in df.columns[df.dtypes == 'object'].tolist()}
+
+#             # if_exists = ['replace', 'append']
+#             df.to_sql(table_name, 
+#                       con=self.engine.connect(),
+#                       if_exists=if_exists,
+#                       index=False,
+#                       dtype=dtyp)    
+#             print(f"테이블명: <{table_name}> 생성 및 업데이트 완료")
+#         except Exception as e:       
+#             print(e)
+#             pass
+#     pass
 
 
 # class Database:

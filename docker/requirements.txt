@@ -1,2 +1,2 @@
 cx-Oracle
-modin[all]
+modin[dask]
