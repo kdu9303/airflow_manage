@@ -26,8 +26,7 @@ class ADW_connection_cx_oracle(cx_Oracle.Connection):
         except Exception as e:
             logging.info(f"원인: {e}")
 
-        super(ADW_connection_cx_oracle, self).__init__(self._user, self._password, self._dsn)
-        
+        super(ADW_connection_cx_oracle, self).__init__(self._user, self._password, self._dsn)      
 
     def cursor(self):
         return MyCursor(self)
@@ -55,6 +54,14 @@ class MyCursor(cx_Oracle.Cursor):
             logging.info("실행이 실패하였습니다.")
             logging.info(f"원인: {e}")
 
+    def executemany(self, query, args):
+
+        logging.info(f"Executing:, {query}")
+        try:
+            return super(MyCursor, self).executemany(query, args)
+        except cx_Oracle.DatabaseError as e:
+            logging.info("실행이 실패하였습니다.")
+            logging.info(f"원인: {e}")
 
 # class ADW_connection_sqlalchemy:
 

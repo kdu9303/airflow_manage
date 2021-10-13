@@ -9,7 +9,7 @@ from airflow.models import Variable
 from airflow.operators.python import PythonOperator
 # airflow에 저장된 변수 불러오기
 # from airflow.models import Variable
-from scripts.call_data import ADW_connection_cx_oracle
+from scripts.call_database import ADW_connection_cx_oracle
 
 
 # ADW Connection setup

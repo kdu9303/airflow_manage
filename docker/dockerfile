@@ -5,8 +5,8 @@
 
 # push:sudo docker push kdu9303/docker-airflow:version
 
-# update version: docker build --tag kdu9303/docker-airflow:0.0.7 .
-# push:sudo docker push kdu9303/docker-airflow:0.0.7
+# update version: docker build --tag kdu9303/docker-airflow:0.0.8 .
+# push:sudo docker push kdu9303/docker-airflow:0.0.8
 
 # docker-compose images 버전 수정할 것
 # docker-compose down && docker-compose up -d
@@ -30,16 +30,11 @@ COPY dependencies/instantclient_21_3 ./dependencies/instantclient_21_3
 ENV LD_LIBRARY_PATH=/opt/airflow/dependencies/instantclient_21_3
 ENV PATH "$PATH:${LD_LIBRARY_PATH}"
 
-#keyfile
-COPY ./keyfiles/google_service_account_key.json ./keyfiles
 
 ENV PYTHONPATH "${PYTHONPATH}:/opt/airflow/dags/"
 
 #modin engine
 ENV MODIN_ENGINE=dask
-
-# google_service_account 임데드 시킬것
-#  /home/ubuntu/keyfiles/google_service_account_key.json
 
 
 USER airflow
