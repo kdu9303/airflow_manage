@@ -33,8 +33,8 @@ def save_collaboration_data(table_name: str):
                 rows = [tuple(x) for x in df.values]
                 
                 cur.fast_executemany = True
-                # 데이터 타입 확인 필수
 
+                # bind 데이터 타입 확인 필수(date형식)
                 cur.executemany(
                                 f"""MERGE INTO {table_name} a
                                     USING DUAL
@@ -91,12 +91,14 @@ default_args = {
     'depends_on_past': False,
     'email_on_failure': False,
     'email_on_retry': False,
-    'retries': 2,
-    'retry_delay': timedelta(minutes=2)
+    'retries': 3,
+    'retry_delay': timedelta(minutes=3)
 }
 
-with DAG('collaboration_data_example_1',
-         description='Collaboration test DAG입니다.',
+with DAG('collaboration_collecting_data',
+         description="""Collaboration 자료를 dw로 전송하는 DAG입니다.
+                        평가시기와 평가기준일이 현재월 기준이기때문에
+                        평가 월 이외 에는 실행하면 날짜가 틀어집니다.""",
          start_date=days_ago(1, 0, 0, 0, 0),
          max_active_runs=1,
          schedule_interval=None,
@@ -107,7 +109,7 @@ with DAG('collaboration_data_example_1',
     get_collaboration_data_task = PythonOperator(task_id="get_collaboration_data_task",
                                                  python_callable=save_collaboration_data,
                                                  op_kwargs={
-                                                            'table_name': 'DW.임시테이블'
+                                                            'table_name': 'DW.collaboration'
                                                            }                                                 
                                                 )
     get_collaboration_data_task

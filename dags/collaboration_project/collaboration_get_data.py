@@ -274,7 +274,7 @@ def collaboration_return_data():
 
             # HttpError 429 발생시 sleep을 더 자주 발생시켜야함
             if cnt % 5 == 0:
-                logging.info("row: " + str(cnt))
+                logging.info(f"전환 부서 수: {str(cnt)}")
                 logging.info("Sleeping...Process will continue in 100 seconds")
                 time.sleep(100)
     except Exception as e:
@@ -297,12 +297,10 @@ def collaboration_return_data():
                      '반기', '진료부구분',
                      '진료과']]
 
-    # airflow 에서는 삭제
-    # writer = pd.ExcelWriter('/opt/airflow/data/Collaboration_rawdata.xlsx', engine='xlsxwriter')
-    # df_etl.to_excel(writer, index=False, sheet_name='rawdata')
-    # writer.save()
-
-    return df_etl
+    # 중복 제거
+    df_duplicate_removed = df_etl[~df_etl.duplicated(keep='last')]
+    
+    return df_duplicate_removed
 
 
 

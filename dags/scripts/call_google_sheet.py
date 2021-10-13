@@ -5,7 +5,7 @@ from google.oauth2 import service_account
 
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
-# local path
+# json file path
 FILE_PATH = '/opt/airflow/plugins/'
 
 # test sheet
@@ -19,7 +19,7 @@ def get_id(dept_values: str) -> list:
     for row in dept_values:
         try:
             dept_values_filtered.append(str(row).split('/')[5])
-        except ValueError:
+        except IndexError:
             # 빈칸 건너뛰는 용도
             pass
     return dept_values_filtered
@@ -35,18 +35,16 @@ def call_google_sheet() -> dict:
     service = build('sheets', 'v4', credentials=credentials, cache_discovery=False)
     sheet = service.spreadsheets()
 
-    logging.getLogger('googleapicliet.discovery_cache').setLevel(logging.ERROR)    
+    logging.getLogger('googleapicliet.discovery_cache').setLevel(logging.ERROR)
     # 부서 전체목록 불러오기(실제 적용)
     dim_dept = sheet.values().get(spreadsheetId='14ps_HTgY1Y7ccW1zDMxl56AmorzZX-XmaTZYmyv4YLo',
                                   range='Sheet15!F2:F').execute()
     dept_values = dim_dept.get('values', [])
-    
+
     SPREADSHEET_ID = get_id(dept_values)
-    
+
     # (테스트시트용)
     # global SPREADSHEET_ID
-    
+
     return sheet, SPREADSHEET_ID
-
-
 
