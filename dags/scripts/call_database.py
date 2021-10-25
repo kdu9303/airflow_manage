@@ -20,13 +20,14 @@ class ADW_connection_cx_oracle(cx_Oracle.Connection):
 
         # cx_oralce version check
         logging.info(f'cx_Oracle Version: {cx_Oracle.__version__}')
-        
+
         try:
             cx_Oracle.init_oracle_client(config_dir=self._tns_admin)
         except Exception as e:
             logging.info(f"원인: {e}")
 
-        super(ADW_connection_cx_oracle, self).__init__(self._user, self._password, self._dsn)      
+        super(ADW_connection_cx_oracle, self)\
+            .__init__(self._user, self._password, self._dsn)
 
     def cursor(self):
         return MyCursor(self)
@@ -39,7 +40,7 @@ class ADW_connection_cx_oracle(cx_Oracle.Connection):
             query = open(sql_file).read()
             return query
         except IOError as e:
-            logging.info("파일을 불러오는데 실패했습니다")    
+            logging.info("파일을 불러오는데 실패했습니다")
             logging.info(e)
 
 

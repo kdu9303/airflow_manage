@@ -26,7 +26,7 @@ def get_id(dept_values: str) -> list:
 
 
 def call_google_sheet() -> dict:
-    
+
     # IAM 및 관리자 -> 서비스 계정 -> JSON 키 새로 발급
     credentials = service_account.Credentials.from_service_account_file(
         FILE_PATH + 'google_service_account_key.json',

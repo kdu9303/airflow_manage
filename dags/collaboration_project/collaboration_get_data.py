@@ -14,7 +14,8 @@ socket.setdefaulttimeout(300)  # 5 minutes
 # 콜라보 칼럼 커스터마이징
 def df_column_etl(df):
 
-    df['평가시기'] = f"{datetime.today().strftime('%Y')[2:]}.{(int(datetime.today().strftime('%m')) - 2) // 3 + 1}Q"
+    df['평가시기'] = f"{datetime.today().strftime('%Y')[2:]}\
+        .{(int(datetime.today().strftime('%m')) - 2) // 3 + 1}Q"
     df['평가기준일'] = pd.to_datetime(datetime.today().replace(day=1,
                                                           hour=0,
                                                           minute=0,
@@ -31,7 +32,7 @@ def df_column_etl(df):
             if pd.isnull(df.loc[row.Index, '평가부서_RAW']) or \
                df.loc[row.Index, '평가부서_RAW'] == "":
                 df.loc[row.Index, '평가부서_RAW'] = df.loc[row.Index - 1, '평가부서_RAW']
-                df.loc[row.Index, '평가부서기구'] = df.loc[row.Index, '평가부서_RAW'].split('_')[:1] 
+                df.loc[row.Index, '평가부서기구'] = df.loc[row.Index, '평가부서_RAW'].split('_')[:1]
         except Exception:
             df.drop(row.Index, inplace=True, errors='ignore')
 
@@ -47,7 +48,7 @@ def df_column_etl(df):
     df.dropna(subset=['친절', '신뢰', '소통및업무협조'], inplace=True)
 
     # 점수 칼럼 extract
-    for row in df.itertuples(): 
+    for row in df.itertuples():
         try:
             if not pd.isnull(df.loc[row.Index, '친절']) and \
                not pd.isnull(df.loc[row.Index, '신뢰']) and \
@@ -61,7 +62,7 @@ def df_column_etl(df):
 
     # could not convert string to float 오류 핸들링
     df.dropna(subset=['점수'], inplace=True)
-    
+
     df['p'] = np.nan
     for row in df.itertuples():
         try:
@@ -94,16 +95,16 @@ def df_column_etl(df):
         except Exception as e:
             logging.info(e)
             pass
-    
+
     df['진료과'] = df['피평가부서_RAW'].str.split('_').str[2]
-    
+
     df['진료부구분'] = ''
     for row in df.itertuples():
         try:
-            # 부천 
+            # 부천
             if df.loc[row.Index, '피평가부서_RAW'].split('_')[0] == '부천':
                 if df.loc[row.Index, '피평가부서_RAW'].split('_')[1] == '진료부':
-                    
+
                     # 내과부
                     if df.loc[row.Index, '피평가부서_RAW'].split('_')[2] \
                         in ('호흡기내과', '알레르기내과', '신장내과',
@@ -137,19 +138,19 @@ def df_column_etl(df):
                             in ('진단검사의학과', '영상의학과',
                                 '병리과', '마취통증의학과'):
                         df.loc[row.Index, '진료부구분'] = '임상지원부'
-                        
+
                     # 중환자응급의학부
                     elif df.loc[row.Index, '피평가부서_RAW'].split('_')[2] \
                             in ('중환자의학과', '응급의학과'):
                         df.loc[row.Index, '진료부구분'] = '중환자응급의학부'
-                        
+
                     # 흉부외과
                     elif df.loc[row.Index, '피평가부서_RAW'].split('_')[2] \
                             in ('소아흉부외과', '성인흉부외과', '흉부외과'):
                         df.loc[row.Index, '진료부구분'] = '흉부외과부'
 
                     # 과거자료 처리용
-                   
+
                     # 감염병센터
                     elif df.loc[row.Index, '피평가부서_RAW'].split('_')[2] == '감염병센터':
                         df.loc[row.Index, '진료부구분'] = '감염병센터'
@@ -171,9 +172,9 @@ def df_column_etl(df):
                     df.loc[row.Index, '진료부구분'] = df.loc[row.Index, '피평가부서_RAW'].split('_')[1]
 
             # 인천
-            else: 
+            else:
                 if df.loc[row.Index, '피평가부서_RAW'].split('_')[1] == '진료부':
- 
+
                     # 내과부
                     if df.loc[row.Index, '피평가부서_RAW'].split('_')[2] \
                             in ('호흡기내과', '알레르기내과',
@@ -191,7 +192,7 @@ def df_column_etl(df):
                             in ('정신건강의학과', '재활의학과',
                                 '신경외과', '신경과'):
                         df.loc[row.Index, '진료부구분'] = '신경재활의학부'
-                        
+
                     # 심장내과부
                     elif df.loc[row.Index, '피평가부서_RAW'].split('_')[2] == '심장내과':
                         df.loc[row.Index, '진료부구분'] = '심장내과부'
@@ -237,7 +238,7 @@ def df_column_etl(df):
                     # 과거자료 처리용
                     elif df.loc[row.Index, '피평가부서_RAW'].split('_')[2] == '건강증진팀':
                         df.loc[row.Index, '진료부구분'] = '건강증진팀'
-                
+
                 # 진료부 외의 값 처리
                 else:
                     df.loc[row.Index, '진료부구분'] = df.loc[row.Index, '피평가부서_RAW'].split('_')[1]
@@ -249,8 +250,8 @@ def df_column_etl(df):
 
 
 def collaboration_return_data():
-    
-    RANGE = '!A2:F'  # 범위 지정 
+
+    RANGE = '!A2:F'  # 범위 지정
 
     # googlesheet API를 통해 시트list를 불러온다
     sheet, SPREADSHEET_ID = call_google_sheet()
@@ -263,7 +264,7 @@ def collaboration_return_data():
             sheet_metadata = sheet.get(spreadsheetId=i).execute()
             sheets = sheet_metadata.get('sheets', '')
             sheet_name = sheets[0].get('properties', {}).get('title', '')
-            
+
             result = sheet.values().get(spreadsheetId=i,
                                         range=sheet_name + RANGE).execute()
 
@@ -298,9 +299,7 @@ def collaboration_return_data():
                      '진료과']]
 
     # 중복 제거
-    df_duplicate_removed = df_etl[~df_etl.duplicated(keep='last')]
-    
+    subset = ['평가시기', '평가기준일', '평가부서_RAW', '피평가부서_RAW']
+    df_duplicate_removed = df_etl[~df_etl.duplicated(subset=subset, keep='last')]
+
     return df_duplicate_removed
-
-
-
