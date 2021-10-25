@@ -21,12 +21,12 @@ def save_yutube_channel_info(table_name: str):
         startTime = time.time()
 
         df = return_channel_statistics()
-        logging.info(df.dtypes)
+        logging.info(df.columns)
         with ADW_connection_cx_oracle() as con:
             with con.cursor() as cur:
 
                 rows = [tuple(x) for x in df.values]
-
+                logging.info(rows)
                 cur.fast_executemany = True
 
                 # bind 데이터 타입 확인 필수(특히 date형식)
@@ -35,23 +35,24 @@ def save_yutube_channel_info(table_name: str):
                         USING DUAL
                         ON
                         (
-                            a.BASEDATE = :5
+                            a.CHANNELID = :1
+                        AND a.BASEDATE = :2
                         )
                         WHEN MATCHED THEN
                             UPDATE SET
-                                  a.VIEWCOUNT = :1
-                                , a.SUBSCRIBERCOUNT = :2
-                                , a.VIDEOCOUNT = :3
-                                , a.CHANNELID = :4
+                                  a.VIEWCOUNT = :3
+                                , a.SUBSCRIBERCOUNT = :4
+                                , a.VIDEOCOUNT = :5
                         WHEN NOT MATCHED THEN
                         INSERT
-                        (  a.VIEWCOUNT
+                        (
+                              a.CHANNELID
+                            , a.BASEDATE
+                            , a.VIEWCOUNT
                             , a.SUBSCRIBERCOUNT
                             , a.VIDEOCOUNT
-                            , a.CHANNELID
-                            , a.BASEDATE
                         )
-                        VALUES (:1, :2, :3, :4, to_date(:5,'YYYY-MM-DD'))
+                        VALUES (:1, :2, :3, :4, :5)
                     """, rows)
                 con.commit()
 

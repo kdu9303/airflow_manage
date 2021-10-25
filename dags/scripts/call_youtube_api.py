@@ -11,4 +11,4 @@ FILE_PATH = '/home/ubuntu/keyfiles/youtube_api_key.txt'
 def get_authenticated_service() -> object:
 
     api_key = Variable.get("YOUTUBE_API_KEY")
-    return build('youtube', 'v3', developerKey=api_key)
+    return build('youtube', 'v3', developerKey=api_key, cache_discovery=False)

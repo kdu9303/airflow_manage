@@ -36,10 +36,10 @@ def channel_statistics_to_df(channel_id, channel_stat: dict) -> pd.DataFrame:
         channel_stat_df[["viewCount", "subscriberCount", "videoCount"]]
 
     # 숫자형으로 변환
-    # channel_stat_df[["viewCount", "subscriberCount", "videoCount"]] = \
-    #     channel_stat_df[["viewCount", "subscriberCount", "videoCount"]]\
-    #     .astype(int)
-    #     # .apply(pd.to_numeric)
+    channel_stat_df[["viewCount", "subscriberCount", "videoCount"]] = \
+        channel_stat_df[["viewCount", "subscriberCount", "videoCount"]]\
+        .astype(int)
+        # .apply(pd.to_numeric)
 
     channel_stat_df["channelId"] = channel_id
 
@@ -49,8 +49,15 @@ def channel_statistics_to_df(channel_id, channel_stat: dict) -> pd.DataFrame:
                                                         second=0,
                                                         microsecond=0))
 
+    # channel_stat_df["baseDate"] = datetime.strftime(base_date,"%Y%m%d")
     channel_stat_df["baseDate"] = base_date
-
+    # 칼럼 순서 정의
+    # MERGE 문은 첫번째 칼럼 순서대로 삽입됨으로 BIND 변수순서대로 칼럼을 바꾼다
+    col_order = [
+        "channelId", "baseDate", "viewCount",
+        "subscriberCount", "videoCount"
+    ]
+    channel_stat_df = channel_stat_df[col_order]
     return channel_stat_df
 
 
@@ -66,4 +73,3 @@ def return_channel_statistics() -> pd.DataFrame:
 
     channel_stat_df = channel_statistics_to_df(channel_id, channel_stat_dict)
     return channel_stat_df
-
