@@ -1,11 +1,14 @@
+import os
 import time
+import logging
+import traceback
 import pandas as pd
 # Call youtube api
-from scripts.call_youtube_api import get_authenticated_service
+from scripts.call_youtube_api import get_authenticated_service_using_api
 
 
 def get_channel_videos(youtube: callable, channel_id: str) -> dict:
-    """#채널 비디오 정보를 dictionary형식으로 반환한다."""
+    """채널 비디오 정보를 dictionary형식으로 반환한다."""
 
     try:
         request = youtube.search().list(
@@ -20,7 +23,10 @@ def get_channel_videos(youtube: callable, channel_id: str) -> dict:
         video_data = {}
 
         while request:
-            response = request.execute()
+            try:
+                response = request.execute()
+            except Exception as e:
+                print(e)
 
             for item in response['items']:
                 video_id = item['id']['videoId']
@@ -32,8 +38,8 @@ def get_channel_videos(youtube: callable, channel_id: str) -> dict:
                 request, response)
 
             time.sleep(1)
-    except Exception as e:
-        print(e)
+    except Exception:
+        logging.info(traceback.format_exc())
     else:
         return video_data
 
@@ -47,10 +53,12 @@ def video_list_to_dataframe(video_data: dict) -> pd.DataFrame:
     # level_1인덱스는 high,low 해상도 구분자
     df["video_id"] = df.index.get_level_values(0)
 
-    df = df[[
-        "video_id", "publishedAt", "title",
-        "description", "publishTime", "channelTitle"
-    ]]
+    # DB INSERT 순서대로 정렬
+    column_order = [
+        "video_id", "channelTitle", "publishedAt",
+        "publishTime", "description", "title"
+    ]
+    df = df[column_order]
 
     # video id 기준으로 중복자료 제거(Multi Index로 인한 중복 발생)
     df = df[~df.duplicated(subset=["video_id"])].reset_index(drop=True)
@@ -67,11 +75,27 @@ def return_channel_videos() -> pd.DataFrame:
     channel_id = 'UCIAUH22hoMwHsVCKCKTR7Hw'
 
     # 초기화
-    youtube = get_authenticated_service()
+    youtube = get_authenticated_service_using_api()
 
     # 비디오 정보 dictionary
     channel_videos_dict = get_channel_videos(youtube, channel_id)
+    # print(channel_videos_dict)
+
+    # 테스트용
+    # import json
+    # print(json.dumps(channel_videos_dict, indent=4))
 
     video_list_df = video_list_to_dataframe(channel_videos_dict)
 
-    return video_list_df.columns
+    # video id 목록 텍스트파일로 저장
+    video_list_file = "/opt/airflow/dags/youtube_project/data/video_list.csv"
+
+    if os.path.isfile(video_list_file):
+        os.remove(video_list_file)
+        video_list_df["video_id"].\
+            to_csv(video_list_file, index=False, header=False)
+    else:
+        video_list_df["video_id"].\
+            to_csv(video_list_file, index=False, header=False)
+
+    return video_list_df

@@ -5,8 +5,8 @@
 
 # push:sudo docker push kdu9303/docker-airflow:version
 
-# update version: docker build --tag kdu9303/docker-airflow:0.0.8 .
-# push:sudo docker push kdu9303/docker-airflow:0.0.8
+# update version: docker build --tag kdu9303/docker-airflow:0.1.0 .
+# push:sudo docker push kdu9303/docker-airflow:0.1.0
 
 # docker-compose images 버전 수정할 것
 # docker-compose down && docker-compose up -d
@@ -22,7 +22,8 @@ RUN apt-get update \
   && apt-get autoremove -yqq --purge \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* \
-  && pip install --upgrade pip
+  # && pip install --upgrade pip
+  && /usr/local/bin/python -m pip install --upgrade pip
 
 # instanct client 
 # TNS_ADMIN 변수 체크할 것
@@ -33,10 +34,6 @@ ENV PATH "$PATH:${LD_LIBRARY_PATH}"
 
 
 ENV PYTHONPATH "${PYTHONPATH}:/opt/airflow/dags/"
-
-#modin engine
-ENV MODIN_ENGINE=dask
-
 
 USER airflow
 

@@ -1,10 +1,12 @@
 import logging
 import time
+import traceback
 from datetime import timedelta
 # from pytz import timezone
 # airflow module
 from airflow import DAG
 from airflow.utils.dates import days_ago
+from airflow.exceptions import AirflowException
 # Operators
 from airflow.operators.python import PythonOperator
 # database module
@@ -31,7 +33,7 @@ def save_collaboration_data(table_name: str):
             with con.cursor() as cur:
 
                 rows = [tuple(x) for x in df.values]
-                
+
                 cur.fast_executemany = True
 
                 # bind 데이터 타입 확인 필수(date형식)
@@ -81,8 +83,8 @@ def save_collaboration_data(table_name: str):
 
         logging.info("EXTRACT 성공")
         logging.info(f'실행 시간: {round(endTime-startTime, 2)}초')
-    except Exception as e:
-        logging.info(f'<<오류 발생>> -> {e}')
+    except Exception:
+        raise AirflowException(f"<<오류 발생>> -> {traceback.format_exc()}")
 
 
 # Dag
@@ -106,10 +108,11 @@ with DAG('collaboration_collecting_data',
          catchup=False
          ) as dag:
 
-    get_collaboration_data_task = PythonOperator(task_id="get_collaboration_data_task",
-                                                 python_callable=save_collaboration_data,
-                                                 op_kwargs={
-                                                     'table_name': 'DW.collaboration'
-                                                 }
-                                                 )
+    get_collaboration_data_task = PythonOperator(
+        task_id="get_collaboration_data_task",
+        python_callable=save_collaboration_data,
+        op_kwargs={
+            'table_name': 'DW.collaboration'
+        }
+    )
     get_collaboration_data_task

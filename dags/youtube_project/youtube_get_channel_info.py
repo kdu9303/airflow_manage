@@ -1,9 +1,11 @@
-# export PYTHONPATH="${PYTHONPATH}:/opt/airflow/dags/"
 import logging
 from datetime import datetime
 import pandas as pd
 # Call youtube api
 from scripts.call_youtube_api import get_authenticated_service
+
+# BUILD 초기화
+YOUTUBE = get_authenticated_service()
 
 
 def get_channel_statistics(youtube: callable, channel_id: str) -> dict:
@@ -11,8 +13,8 @@ def get_channel_statistics(youtube: callable, channel_id: str) -> dict:
 
     try:
         request = youtube.channels().list(
-            id=channel_id,
-            #    mine=True,
+            # id=channel_id,
+            mine=True,
             part='id,statistics',
             fields='nextPageToken,items(id,statistics)',
         )
@@ -39,7 +41,7 @@ def channel_statistics_to_df(channel_id, channel_stat: dict) -> pd.DataFrame:
     channel_stat_df[["viewCount", "subscriberCount", "videoCount"]] = \
         channel_stat_df[["viewCount", "subscriberCount", "videoCount"]]\
         .astype(int)
-        # .apply(pd.to_numeric)
+        #  .apply(pd.to_numeric)
 
     channel_stat_df["channelId"] = channel_id
 
@@ -48,9 +50,9 @@ def channel_statistics_to_df(channel_id, channel_stat: dict) -> pd.DataFrame:
                                                         minute=0,
                                                         second=0,
                                                         microsecond=0))
-
-    # channel_stat_df["baseDate"] = datetime.strftime(base_date,"%Y%m%d")
+    
     channel_stat_df["baseDate"] = base_date
+
     # 칼럼 순서 정의
     # MERGE 문은 첫번째 칼럼 순서대로 삽입됨으로 BIND 변수순서대로 칼럼을 바꾼다
     col_order = [
@@ -65,11 +67,13 @@ def return_channel_statistics() -> pd.DataFrame:
 
     channel_id = 'UCIAUH22hoMwHsVCKCKTR7Hw'
 
-    # 초기화
-    youtube = get_authenticated_service()
-
     # 채널 정보 dictonary
-    channel_stat_dict = get_channel_statistics(youtube, channel_id)
+    channel_stat_dict = get_channel_statistics(YOUTUBE, channel_id)
 
     channel_stat_df = channel_statistics_to_df(channel_id, channel_stat_dict)
+
     return channel_stat_df
+
+
+if __name__ == '__main__':
+    return_channel_statistics()
