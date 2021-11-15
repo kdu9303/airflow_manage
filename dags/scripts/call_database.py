@@ -46,7 +46,7 @@ class ADW_connection_cx_oracle(cx_Oracle.Connection):
 
 class MyCursor(cx_Oracle.Cursor):
 
-    def execute(self, query, args):
+    def execute(self, query, args: tuple = ()):
 
         logging.info(f"Executing:, {query}")
         try:
@@ -55,7 +55,7 @@ class MyCursor(cx_Oracle.Cursor):
             logging.info("실행이 실패하였습니다.")
             logging.info(f"원인: {e}")
 
-    def executemany(self, query, args):
+    def executemany(self, query, args: dict = ()):
 
         logging.info(f"Executing:, {query}")
         try:

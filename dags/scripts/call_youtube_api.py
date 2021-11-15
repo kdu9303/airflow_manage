@@ -24,46 +24,6 @@ def get_authenticated_service_using_api() -> object:
     return build('youtube', 'v3', developerKey=api_key, cache_discovery=False)
 
 
-# def get_authenticated_service():
-
-    if os.path.isfile(f"{FILE_PATH}refreshed_credentials.json"):
-        with open(f"{FILE_PATH}refreshed_credentials.json", 'r') as f:
-            creds_data = json.load(f)
-        creds = Credentials(
-            # access_token=creds_data["token"],
-            token=creds_data["token"],
-            client_id=creds_data["client_id"],
-            client_secret=creds_data["client_secret"],
-            token_uri="https://accounts.google.com/o/oauth2/token",
-            refresh_token=creds_data["refresh_token"],
-            # token_expiry=None
-            expiry=None
-            # user_agent='MyAgent/1.0'
-        )
-        # if creds is None or creds.invalid:
-        if not creds or not creds.valid:
-            # http = creds.authorize(httplib2.Http())
-            creds.refresh(Request())
-
-    else:
-        flow = InstalledAppFlow.\
-            from_client_secrets_file(CLIENT_SECRETS_FILE, SCOPES)
-        creds = flow.run_console()
-        creds_data = {
-            'token': creds.token,
-            'refresh_token': creds.refresh_token,
-            'token_uri': creds.token_uri,
-            'client_id': creds.client_id,
-            'client_secret': creds.client_secret,
-            'scopes': creds.scopes
-        }
-        print(creds_data)
-        with open(f"{FILE_PATH}refreshed_credentials.json", 'w') as outfile:
-            json.dump(creds_data, outfile)
-
-    return build('youtube', 'v3', credentials=creds, cache_discovery=False)
-
-
 def get_authenticated_service():
 
     creds = None
