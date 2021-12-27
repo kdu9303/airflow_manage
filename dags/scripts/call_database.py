@@ -8,6 +8,10 @@ from airflow.models import Variable
 """ 모든 입력 파라미터는 AIRFLOW VARIABLE에서 가져오는 것으로 한다."""
 
 
+# 로그 기록용
+logger = logging.getLogger()
+
+
 class ADW_connection_cx_oracle(cx_Oracle.Connection):
     """ADW initialization."""
 
@@ -23,8 +27,11 @@ class ADW_connection_cx_oracle(cx_Oracle.Connection):
 
         try:
             cx_Oracle.init_oracle_client(config_dir=self._tns_admin)
+        except cx_Oracle.ProgrammingError as e:
+            logger.exception(f"{self.__class__.__name__}.__init()__ --> {e}")
+
         except Exception as e:
-            logging.info(f"원인: {e}")
+            logger.exception(f"{self.__class__.__name__}.__init()__ --> {e}")
 
         super(ADW_connection_cx_oracle, self)\
             .__init__(self._user, self._password, self._dsn)
@@ -40,8 +47,7 @@ class ADW_connection_cx_oracle(cx_Oracle.Connection):
             query = open(sql_file).read()
             return query
         except IOError as e:
-            logging.info("파일을 불러오는데 실패했습니다")
-            logging.info(e)
+            logger.exception(f"{self.__class__.__name__}.{self.get_query_from_file.__name__} --> {e}")
 
 
 class MyCursor(cx_Oracle.Cursor):
@@ -52,8 +58,7 @@ class MyCursor(cx_Oracle.Cursor):
         try:
             return super(MyCursor, self).execute(query, args)
         except cx_Oracle.DatabaseError as e:
-            logging.info("실행이 실패하였습니다.")
-            logging.info(f"원인: {e}")
+            logger.exception(f"{self.__class__.__name__}.{self.execute.__name__} --> {e}")
 
     def executemany(self, query, args: dict = ()):
 
@@ -61,8 +66,7 @@ class MyCursor(cx_Oracle.Cursor):
         try:
             return super(MyCursor, self).executemany(query, args)
         except cx_Oracle.DatabaseError as e:
-            logging.info("실행이 실패하였습니다.")
-            logging.info(f"원인: {e}")
+            logger.exception(f"{self.__class__.__name__}.{self.executemany.__name__} --> {e}")
 
 # class ADW_connection_sqlalchemy:
 
