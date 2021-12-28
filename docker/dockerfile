@@ -28,6 +28,7 @@ RUN apt-get update \
 # instanct client 
 # TNS_ADMIN 변수 체크할 것
 # sqlnet.ora DIRECTORY 확인
+# docker 컨테이너 안에 sqlnet.ora 경로 변경 필수 
 COPY dependencies/instantclient_21_3 ./dependencies/instantclient_21_3
 ENV LD_LIBRARY_PATH=/opt/airflow/dependencies/instantclient_21_3
 ENV PATH "$PATH:${LD_LIBRARY_PATH}"

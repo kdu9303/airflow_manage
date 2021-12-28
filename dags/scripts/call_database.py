@@ -27,8 +27,8 @@ class ADW_connection_cx_oracle(cx_Oracle.Connection):
 
         try:
             cx_Oracle.init_oracle_client(config_dir=self._tns_admin)
-        except cx_Oracle.ProgrammingError as e:
-            logger.exception(f"{self.__class__.__name__}.__init()__ --> {e}")
+        except cx_Oracle.ProgrammingError:
+            pass
 
         except Exception as e:
             logger.exception(f"{self.__class__.__name__}.__init()__ --> {e}")

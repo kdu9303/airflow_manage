@@ -25,6 +25,7 @@ logger = logging.getLogger()
 
 def get_authenticated_service_using_api() -> object:
     api_key = Variable.get("YOUTUBE_API_KEY")
+    # api_key = "" # 검증용
     return build('youtube', 'v3', developerKey=api_key, cache_discovery=False)
 
 
@@ -60,6 +61,7 @@ def get_authenticated_service():
 
         return build('youtube', 'v3', credentials=creds, cache_discovery=False)
 
+    
     except Exception as e:
         logger.exception(f"{get_authenticated_service.__name__} --> {e}")
         raise

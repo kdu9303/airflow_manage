@@ -89,7 +89,10 @@ def return_channel_videos() -> pd.DataFrame:
 
     # video id 목록 텍스트파일로 저장
     video_list_file = "/opt/airflow/dags/youtube_project/data/video_list.csv"
-
+    
+    if not os.path.exists("/opt/airflow/dags/youtube_project/data"):
+        os.mkdir("/opt/airflow/dags/youtube_project/data")
+        
     if os.path.isfile(video_list_file):
         os.remove(video_list_file)
         video_list_df["video_id"].\
@@ -99,3 +102,7 @@ def return_channel_videos() -> pd.DataFrame:
             to_csv(video_list_file, index=False, header=False)
 
     return video_list_df
+
+
+if __name__ == '__main__':
+    return_channel_videos()
