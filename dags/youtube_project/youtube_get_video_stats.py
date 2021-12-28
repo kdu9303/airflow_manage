@@ -44,7 +44,8 @@ def get_video_statistic(youtube: callable, video_list: list):
 
 def video_stat_to_dataframe(video_data: dict) -> pd.DataFrame:
     """채널 비디오 정보를 데이터프레임으로 리턴한다."""
-    df = pd.concat({k: pd.DataFrame([v]) for k, v in video_data.items()}, axis=0)
+    df = pd.concat({k: pd.DataFrame([v]) for k, v in video_data.items()},
+                   axis=0)
 
     # 멀티인덱스에서 level_0만 가져온다
     # level_1인덱스는 high,low 해상도 구분자

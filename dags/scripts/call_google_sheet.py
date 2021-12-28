@@ -32,13 +32,17 @@ def call_google_sheet() -> dict:
         FILE_PATH + 'google_service_account_key.json',
         scopes=SCOPES)
 
-    service = build('sheets', 'v4', credentials=credentials, cache_discovery=False)
+    service = build('sheets',
+                    'v4',
+                    credentials=credentials,
+                    cache_discovery=False)
     sheet = service.spreadsheets()
 
     logging.getLogger('googleapicliet.discovery_cache').setLevel(logging.ERROR)
     # 부서 전체목록 불러오기(실제 적용)
-    dim_dept = sheet.values().get(spreadsheetId='14ps_HTgY1Y7ccW1zDMxl56AmorzZX-XmaTZYmyv4YLo',
-                                  range='Sheet15!F2:F').execute()
+    dim_dept = sheet.values().\
+        get(spreadsheetId='14ps_HTgY1Y7ccW1zDMxl56AmorzZX-XmaTZYmyv4YLo',
+            range='Sheet15!F2:F').execute()
     dept_values = dim_dept.get('values', [])
 
     SPREADSHEET_ID = get_id(dept_values)

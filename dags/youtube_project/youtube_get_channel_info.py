@@ -71,9 +71,18 @@ def return_channel_statistics() -> pd.DataFrame:
     channel_stat_dict = get_channel_statistics(YOUTUBE, channel_id)
 
     channel_stat_df = channel_statistics_to_df(channel_id, channel_stat_dict)
+    print(channel_stat_df)
 
     return channel_stat_df
 
 
 if __name__ == '__main__':
     return_channel_statistics()
+    # request = YOUTUBE.channels().list(
+    #     mine=True,
+    #     part='id,statistics',
+    #     fields='nextPageToken,items(id,statistics)',
+    # )
+
+    # channel_data = request.execute()
+    # print(channel_data)
