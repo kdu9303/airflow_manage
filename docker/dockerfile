@@ -5,15 +5,15 @@
 
 # push:sudo docker push kdu9303/docker-airflow:version
 
-# update version: docker build --tag kdu9303/docker-airflow:0.1.0 .
-# push:sudo docker push kdu9303/docker-airflow:0.1.0
+# update version: docker build --tag kdu9303/docker-airflow:0.1.2 .
+# push:sudo docker push kdu9303/docker-airflow:0.1.2
 
 # docker-compose images 버전 수정할 것
 # docker-compose down && docker-compose up -d
 
-# latest version: 0.0.6
+# latest version: 0.1.2
 
-FROM apache/airflow:2.1.4-python3.8
+FROM apache/airflow:2.2.0-python3.8
 USER root
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
@@ -21,9 +21,9 @@ RUN apt-get update \
   && apt-get install -y --no-install-recommends libaio1 \   
   && apt-get autoremove -yqq --purge \
   && apt-get clean \
-  && rm -rf /var/lib/apt/lists/* \
+  && rm -rf /var/lib/apt/lists/*
   # && pip install --upgrade pip
-  && /usr/local/bin/python -m pip install --upgrade pip
+  # && /usr/local/bin/python -m pip install --upgrade pip
 
 # instanct client 
 # TNS_ADMIN 변수 체크할 것
@@ -39,6 +39,7 @@ ENV PYTHONPATH "${PYTHONPATH}:/opt/airflow/dags/"
 USER airflow
 
 COPY requirements.txt /requirements.txt
-RUN pip install --no-cache-dir --user -r /requirements.txt
+RUN /usr/local/bin/python -m pip install --upgrade pip \
+  && pip install --no-cache-dir --user -r /requirements.txt
 
 

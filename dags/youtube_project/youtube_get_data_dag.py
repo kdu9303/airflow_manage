@@ -192,7 +192,7 @@ with DAG('youtube_collecting_data',
          description="""Youtube 정보를 가져옵니다.""",
          start_date=days_ago(1, 0, 0, 0, 0),
          max_active_runs=1,
-         schedule_interval="0 */6 * * *",
+         schedule_interval="0 9,20 * * 1-5",
          default_args=default_args,
          catchup=False
          ) as dag:

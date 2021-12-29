@@ -70,6 +70,7 @@ def video_list_to_dataframe(video_data: dict) -> pd.DataFrame:
     return df
 
 
+# main
 def return_channel_videos() -> pd.DataFrame:
 
     channel_id = 'UCIAUH22hoMwHsVCKCKTR7Hw'
@@ -92,14 +93,9 @@ def return_channel_videos() -> pd.DataFrame:
     
     if not os.path.exists("/opt/airflow/dags/youtube_project/data"):
         os.mkdir("/opt/airflow/dags/youtube_project/data")
-        
-    if os.path.isfile(video_list_file):
-        os.remove(video_list_file)
-        video_list_df["video_id"].\
-            to_csv(video_list_file, index=False, header=False)
-    else:
-        video_list_df["video_id"].\
-            to_csv(video_list_file, index=False, header=False)
+
+    video_list_df["video_id"].\
+        to_csv(video_list_file, index=False, header=False, mode='w')
 
     return video_list_df
 

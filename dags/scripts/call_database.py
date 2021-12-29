@@ -22,16 +22,15 @@ class ADW_connection_cx_oracle(cx_Oracle.Connection):
         self._password: str = Variable.get("ADW_PASSWORD")
         self._dsn: dict = Variable.get("ADW_SID")
 
-        # cx_oralce version check
-        logging.info(f'cx_Oracle Version: {cx_Oracle.__version__}')
-
         try:
             cx_Oracle.init_oracle_client(config_dir=self._tns_admin)
         except cx_Oracle.ProgrammingError:
+            # 초기화 중복 발생 방지
             pass
 
         except Exception as e:
             logger.exception(f"{self.__class__.__name__}.__init()__ --> {e}")
+            raise
 
         super(ADW_connection_cx_oracle, self)\
             .__init__(self._user, self._password, self._dsn)
@@ -43,12 +42,13 @@ class ADW_connection_cx_oracle(cx_Oracle.Connection):
         """query를 파일로부터 불러온다."""
 
         try:
-            sql_file = f'{sql_path}{sql_name}'
+            sql_file = f'{sql_path}/{sql_name}'
             query = open(sql_file).read()
             return query
-        except IOError as e:
-            logger.exception(f"{self.__class__.__name__}.{self.get_query_from_file.__name__} --> {e}")
 
+        except FileNotFoundError as e:
+            logger.exception(f"{self.__class__.__name__}.{self.get_query_from_file.__name__} --> {e}")
+            raise
 
 class MyCursor(cx_Oracle.Cursor):
 
@@ -59,6 +59,7 @@ class MyCursor(cx_Oracle.Cursor):
             return super(MyCursor, self).execute(query, args)
         except cx_Oracle.DatabaseError as e:
             logger.exception(f"{self.__class__.__name__}.{self.execute.__name__} --> {e}")
+            raise
 
     def executemany(self, query, args: dict = ()):
 
@@ -67,6 +68,7 @@ class MyCursor(cx_Oracle.Cursor):
             return super(MyCursor, self).executemany(query, args)
         except cx_Oracle.DatabaseError as e:
             logger.exception(f"{self.__class__.__name__}.{self.executemany.__name__} --> {e}")
+            raise
 
 # class ADW_connection_sqlalchemy:
 

@@ -60,9 +60,10 @@ def video_stat_to_dataframe(video_data: dict) -> pd.DataFrame:
     df["baseDate"] = base_date
 
     # 숫자형으로 변환
-    df[["viewCount", "likeCount", "dislikeCount", "favoriteCount", "commentCount"]] = \
-        df[["viewCount", "likeCount", "dislikeCount", "favoriteCount", "commentCount"]]\
-        .astype(int)
+    df[["viewCount", "likeCount", "dislikeCount",
+        "favoriteCount", "commentCount"]] = \
+        df[["viewCount", "likeCount", "dislikeCount",
+            "favoriteCount", "commentCount"]].astype(int)
 
     df = df[[
         "video_id", "baseDate", "viewCount", "likeCount",
@@ -75,6 +76,7 @@ def video_stat_to_dataframe(video_data: dict) -> pd.DataFrame:
     return df
 
 
+# main
 def return_video_stats() -> pd.DataFrame:
 
     # 초기화
@@ -89,7 +91,7 @@ def return_video_stats() -> pd.DataFrame:
     # 비디오 통계 dictionary
     video_statistic_dict = get_video_statistic(YOUTUBE, video_list)
 
-    # 테스트용
+    # 검증용
     # import json
     # print(json.dumps(video_statistic_dict, indent=4))
 
