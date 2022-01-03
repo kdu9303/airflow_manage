@@ -11,6 +11,7 @@ def update_total_census_population(conn: ADW_connection_cx_oracle,
                                    sql_path: str,
                                    sql_name: str):
     """총인구조사 테이블에 CENSUS_POLULATION 테이블 데이터를 업데이트한다"""
+
     try:
         with conn.cursor() as cur:
 
@@ -35,7 +36,7 @@ def update_total_census_population(conn: ADW_connection_cx_oracle,
 
 
 # main
-def update_total_census_population_main():
+def update_census_datamart_main():
 
     # Database initialization
     conn = ADW_connection_cx_oracle()
@@ -50,4 +51,4 @@ def update_total_census_population_main():
 
 
 if __name__ == '__main__':
-    update_total_census_population_main()
+    update_census_datamart_main()

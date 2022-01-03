@@ -7,7 +7,7 @@ from airflow.utils.dates import days_ago
 from airflow.operators.python import PythonOperator
 # kosis module
 from kosis_project.kosis_upload_data import census_population_main
-from kosis_project.kosis_update_datamart import update_total_census_population_main
+from kosis_project.kosis_update_datamart import update_census_datamart_main
 
 
 # Dag
@@ -42,12 +42,12 @@ with DAG('kosis_collecting_data',
 
     # 2단계
     # CENSUS_POPULATION 테이블에서 파생되는 DATA MART를 업데이트
-    run_update_total_census_population_task = PythonOperator(
-        task_id="run_update_total_census_population_task",
-        python_callable=update_total_census_population_main
+    run_update_census_datamart_main_task = PythonOperator(
+        task_id="run_update_census_datamart_main_task",
+        python_callable=update_census_datamart_main
     )
 
     # task flow
-    run_census_population_task >> run_update_total_census_population_task
+    run_census_population_task >> run_update_census_datamart_main_task
 
 

@@ -260,5 +260,16 @@ services:
       airflow-init:
         condition: service_completed_successfully
 
+  # restart unhealty containers
+  autoheal:
+    image: willfarrell/autoheal:latest
+    tty: true
+    container_name: autoheal
+    restart: always
+    environment:
+      - AUTOHEAL_CONTAINER_LABEL=all
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock      
+
 volumes:
   postgres-db-volume:
