@@ -1,14 +1,16 @@
 import logging
-from datetime import timedelta
+import pendulum
+from datetime import datetime, timedelta
 # airflow module
 from airflow import DAG
-from airflow.utils.dates import days_ago
+# from airflow.utils.dates import days_ago
 # Operators
 from airflow.operators.python import PythonOperator
 # kosis module
 from kosis_project.kosis_upload_data import census_population_main
 from kosis_project.kosis_update_datamart import update_census_datamart_main
 
+KST = pendulum.timezone("Asia/Seoul")
 
 # Dag
 default_args = {
@@ -23,7 +25,7 @@ default_args = {
 
 with DAG('kosis_collecting_data',
          description="""KOSIS 정보를 가져옵니다.""",
-         start_date=days_ago(1, 0, 0, 0, 0),
+         start_date=datetime(2022, 1, 1, tzinfo=KST),
          max_active_runs=1,
          schedule_interval="0 9 20-28 * 1-5",
          default_args=default_args,

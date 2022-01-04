@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import requests
 import datetime
+from dateutil.relativedelta import relativedelta
 import json
 import logging
 import pandas as pd
@@ -13,9 +14,10 @@ logger = logging.getLogger()
 def get_census_data(api_key: str) -> list:
 
     # 전월, 전전월자료를 가져온다
-    date_today = datetime.date.today().strftime('%Y%m')
-    startPrdDe = [int(date_today) - 2, int(date_today) - 1, int(date_today)]
-    # startPrdDe = [int(date_today)]
+    cur_month = datetime.date.today().strftime('%Y%m')
+    prev_month1 = (datetime.date.today() + relativedelta(months = -1)).strftime('%Y%m')
+    prev_month2 = (datetime.date.today() + relativedelta(months = -2)).strftime('%Y%m')
+    startPrdDe = [int(prev_month2), int(prev_month1), int(cur_month)]
 
     population = []
 
@@ -43,6 +45,7 @@ def get_census_data(api_key: str) -> list:
         except Exception as e:
             logger.exception(f"{get_census_data.__name__} --> {e}")
             raise
+
     return population
 
 
@@ -52,6 +55,7 @@ def data_transform(population):
         df = pd.concat(
             pd.DataFrame([v]) for row in population for j, v in enumerate(row)
             )
+
     #    df = pd.concat(pd.DataFrame([v]) for i, v in enumerate(population))
         df['DT'] = df['DT'].astype('int')
 
@@ -61,9 +65,16 @@ def data_transform(population):
         col = ['PRD_DE', 'C1', 'C1_NM', 'TBL_ID', 'DT']
         df = df[col].reset_index(drop=True)
 
+    except ValueError:
+        logger.warning(f"{data_transform.__name__} \
+                         --> No data returned from api request")
+
+    except UnboundLocalError:
+        logger.warning(f"{data_transform.__name__} \
+                         --> No data returned from api request")
+
     except Exception as e:
         logger.exception(f"{data_transform.__name__} --> {e}")
-
     return df
 
 
