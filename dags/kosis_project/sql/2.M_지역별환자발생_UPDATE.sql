@@ -1,4 +1,4 @@
-MERGE INTO  DW.M_지역별환자발생 a
+MERGE INTO DW.M_지역별환자발생 a
 USING
     (  
         SELECT
@@ -17,7 +17,7 @@ USING
                       AND A.주소_시군구 = B.시군구
                    ) 인구수
         FROM
-        
+
         (
             SELECT
                       A.병원명
@@ -48,7 +48,7 @@ USING
             LEFT OUTER JOIN DW.환자정보_전체 B ON A.DW환자번호 = B.DW환자번호
             WHERE 1 = 1
         --    AND EXTRACT (YEAR FROM A.수진기준일자) IN (2017, 2018, 2019,2020,2021)
-            AND A.수진기준일자 BETWEEN add_months(TRUNC(SYSDATE,'MM'), -2) AND add_months(TRUNC(SYSDATE,'MM'), -1)
+            AND TRUNC(A.수진기준일자,'MM')  BETWEEN add_months(TRUNC(SYSDATE,'MM'), -2) AND add_months(TRUNC(SYSDATE,'MM'), -1)
             AND B.주소_시도 IS NOT NULL
         
         ) A
@@ -82,7 +82,7 @@ WHEN NOT MATCHED THEN
                   , 환자수
                   , 인구수
                 )  
-                
+
         VALUES (
                     b.병원명
                   , b.기준월

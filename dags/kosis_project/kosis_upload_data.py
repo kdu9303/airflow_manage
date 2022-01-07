@@ -9,6 +9,7 @@ from kosis_project.kosis_get_total_census_data import return_cencus_data
 from scripts.call_database import ADW_connection_cx_oracle
 
 
+# external file 이 아닌 쿼리 작성은 upload 파일에 모아서 정의한다
 def upload_to_census_population(conn: ADW_connection_cx_oracle,
                                 kosis_data: DataFrame,
                                 table_name: str):
@@ -50,7 +51,6 @@ def upload_to_census_population(conn: ADW_connection_cx_oracle,
 
             endTime = time.time()
 
-        conn.close()
         logging.info("작업 완료")
         logging.info(f'실행 시간: {round(endTime-startTime,2)}초')
 
@@ -69,6 +69,8 @@ def census_population_main():
     census_data = return_cencus_data()
 
     upload_to_census_population(conn, census_data, "dw.census_population")
+
+    conn.close()
 
 
 if __name__ == '__main__':

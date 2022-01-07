@@ -5,9 +5,6 @@ from airflow.models import Variable
 # from sqlalchemy import types, create_engine
 # from pandas.io.sql import to_sql, read_sql
 
-""" 모든 입력 파라미터는 AIRFLOW VARIABLE에서 가져오는 것으로 한다."""
-
-
 # 로그 기록용
 logger = logging.getLogger()
 

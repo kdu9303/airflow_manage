@@ -39,3 +39,6 @@ google_service_account_key.json
 youtube_credentials_installed.json
 youtube_credentials_web_app.json
 refreshed_credentials.json
+
+# token
+token.pickle

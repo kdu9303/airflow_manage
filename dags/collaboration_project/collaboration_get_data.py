@@ -31,8 +31,10 @@ def df_column_etl(df):
         try:
             if pd.isnull(df.loc[row.Index, '평가부서_RAW']) or \
                df.loc[row.Index, '평가부서_RAW'] == "":
-                df.loc[row.Index, '평가부서_RAW'] = df.loc[row.Index - 1, '평가부서_RAW']
-                df.loc[row.Index, '평가부서기구'] = df.loc[row.Index, '평가부서_RAW'].split('_')[:1]
+                df.loc[row.Index, '평가부서_RAW'] = \
+                    df.loc[row.Index - 1, '평가부서_RAW']
+                df.loc[row.Index, '평가부서기구'] = \
+                    df.loc[row.Index, '평가부서_RAW'].split('_')[:1]
         except Exception:
             df.drop(row.Index, inplace=True, errors='ignore')
 
@@ -54,9 +56,12 @@ def df_column_etl(df):
                not pd.isnull(df.loc[row.Index, '신뢰']) and \
                not pd.isnull(df.loc[row.Index, '소통및업무협조']):
 
-                df.loc[row.Index, '점수'] = round((float(df.loc[row.Index, '친절'])
-                                                 + float(df.loc[row.Index, '신뢰'])
-                                                 + float(df.loc[row.Index, '소통및업무협조'])) / 3)
+                df.loc[row.Index, '점수'] = \
+                    round((float(df.loc[row.Index, '친절']) +
+                           float(df.loc[row.Index, '신뢰']) +
+                           float(df.loc[row.Index, '소통및업무협조'])
+                           ) / 3)
+
         except Exception as e:
             logging.info(e)
 

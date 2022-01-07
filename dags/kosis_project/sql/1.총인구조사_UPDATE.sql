@@ -1,4 +1,4 @@
-MERGE INTO  DW.총인구조사 a
+MERGE INTO DW.총인구조사 a
 USING 
         (
           SELECT 

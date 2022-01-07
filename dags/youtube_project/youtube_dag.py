@@ -1,4 +1,3 @@
-from pandas.core.frame import DataFrame
 import pendulum
 from datetime import datetime, timedelta
 # airflow module
@@ -60,4 +59,6 @@ with DAG('youtube_collecting_data',
     )
 
     # task flow
-    upload_yutube_channel_info_task >> upload_yutube_video_info_task >> upload_yutube_video_stats_task
+    upload_yutube_channel_info_task >> \
+        upload_yutube_video_info_task >> \
+        upload_yutube_video_stats_task
