@@ -259,7 +259,7 @@ def df_column_etl(df) -> pd.DataFrame:
     return df
 
 # main
-def collaboration_main():
+def collaboration_etl_process_main():
 
     RANGE = '!A2:F'  # 범위 지정
 

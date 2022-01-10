@@ -15,19 +15,28 @@ def get_census_data(api_key: str) -> list:
 
     # 전월, 전전월자료를 가져온다
     cur_month = datetime.date.today().strftime('%Y%m')
-    prev_month1 = (datetime.date.today() + relativedelta(months = -1)).strftime('%Y%m')
-    prev_month2 = (datetime.date.today() + relativedelta(months = -2)).strftime('%Y%m')
+
+    prev_month1 = (
+        datetime.date.today() + relativedelta(months=-1)
+        ).strftime('%Y%m')
+    prev_month2 = (
+        datetime.date.today() + relativedelta(months=-2)
+        ).strftime('%Y%m')
+
     startPrdDe = [int(prev_month2), int(prev_month1), int(cur_month)]
 
     population = []
 
     for date in startPrdDe:
-        url_1 = 'https://kosis.kr/openapi/Param/statisticsParameterData.do?'
-        url_2 = f'method=getList&apiKey={api_key}&'
-        url_3 = 'itmId=T20+&objL1=ALL&objL2=&objL3=&objL4=&objL5=&objL6=&objL7=&objL8=&'
-        url_4 = f'format=json&jsonVD=Y&prdSe=M&startPrdDe={date}&endPrdDe={date}&'
-        url_5 = 'loadGubun=2&orgId=101&tblId=DT_1B040A3'
-        url = url_1 + url_2 + url_3 + url_4 + url_5
+        url = (
+            'https://kosis.kr/openapi/Param/statisticsParameterData.do?'
+            f'method=getList&apiKey={api_key}&'
+            'itmId=T20+&objL1=ALL&objL2=&objL3=&objL4=&'
+            'objL5=&objL6=&objL7=&objL8=&'
+            'format=json&jsonVD=Y&prdSe=M&'
+            f'startPrdDe={date}&endPrdDe={date}&'
+            'loadGubun=2&orgId=101&tblId=DT_1B040A3'
+        )
 
         try:
             r = requests.get(url)

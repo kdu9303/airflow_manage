@@ -5,9 +5,15 @@ from airflow.exceptions import AirflowException
 # database module
 from scripts.call_database import ADW_connection_cx_oracle
 # youtube module
-from youtube_project.youtube_get_channel_info import return_channel_statistics  # 채널 정보
-from youtube_project.youtube_get_video_info import return_channel_videos  # 채널 비디오 정보
-from youtube_project.youtube_get_video_stats import return_video_stats  # 비디오 통계
+from youtube_project.youtube_get_channel_info import (
+    return_channel_statistics
+)  # 채널 정보
+from youtube_project.youtube_get_video_info import (
+    return_channel_videos
+)  # 채널 비디오 정보
+from youtube_project.youtube_get_video_stats import (
+    return_video_stats
+)  # 비디오 통계
 
 
 # external file 이 아닌 쿼리 작성은 upload 파일에 모아서 정의한다

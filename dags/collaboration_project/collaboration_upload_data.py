@@ -1,34 +1,22 @@
-import logging
 import time
-import traceback
-from datetime import timedelta
-# from pytz import timezone
-# airflow module
-from airflow import DAG
-from airflow.utils.dates import days_ago
+import logging
 from airflow.exceptions import AirflowException
-# Operators
-from airflow.operators.python import PythonOperator
 # database module
 from scripts.call_database import ADW_connection_cx_oracle
 # collaboration module
-from collaboration_project.collaboration_get_data import collaboration_main
+from collaboration_project.collaboration_get_data import (
+    collaboration_etl_process_main
+)
 
 
-# timezione setting
-# KST = timezone('Asia/Seoul')
-
-
-# googlesheet to database
-def save_collaboration_data(table_name: str):
-    logging.info("함수를 호출합니다. save_collaboration_data()")
+def upload_to_collaboration(table_name: str):
+    logging.info("함수를 호출합니다. upload_to_collaboration()")
 
     try:
         startTime = time.time()
 
-        df = collaboration_main()
-        # path = "/opt/airflow/data/collaboration_raw2.csv"
-        # df.to_csv(path, index=False, header=False)
+        df = collaboration_etl_process_main()
+
         with ADW_connection_cx_oracle() as con:
             with con.cursor() as cur:
 
@@ -83,36 +71,7 @@ def save_collaboration_data(table_name: str):
 
         logging.info("EXTRACT 성공")
         logging.info(f'실행 시간: {round(endTime-startTime, 2)}초')
-    except Exception:
-        raise AirflowException(f"<<오류 발생>> -> {traceback.format_exc()}")
-
-
-# Dag
-default_args = {
-    'owner': 'airflow',
-    'depends_on_past': False,
-    'email_on_failure': False,
-    'email_on_retry': False,
-    'retries': 1,
-    'retry_delay': timedelta(minutes=1)
-}
-
-with DAG('collaboration_collecting_data',
-         description="""Collaboration 자료를 dw로 전송하는 DAG입니다.
-                        평가시기와 평가기준일이 현재월 기준이기때문에
-                        평가 월 이외 에는 실행하면 날짜가 틀어집니다.""",
-         start_date=days_ago(1, 0, 0, 0, 0),
-         max_active_runs=1,
-         schedule_interval=None,
-         default_args=default_args,
-         catchup=False
-         ) as dag:
-
-    get_collaboration_data_task = PythonOperator(
-        task_id="get_collaboration_data_task",
-        python_callable=save_collaboration_data,
-        op_kwargs={
-            'table_name': 'DW.collaboration'
-        }
-    )
-    get_collaboration_data_task
+    except Exception as e:
+        raise AirflowException(
+            f"{upload_to_collaboration.__name__} --> {e}"
+            )
