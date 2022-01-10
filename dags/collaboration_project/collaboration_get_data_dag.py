@@ -12,7 +12,7 @@ from airflow.operators.python import PythonOperator
 # database module
 from scripts.call_database import ADW_connection_cx_oracle
 # collaboration module
-from collaboration_project.collaboration_get_data import collaboration_return_data
+from collaboration_project.collaboration_get_data import collaboration_main
 
 
 # timezione setting
@@ -26,7 +26,7 @@ def save_collaboration_data(table_name: str):
     try:
         startTime = time.time()
 
-        df = collaboration_return_data()
+        df = collaboration_main()
         # path = "/opt/airflow/data/collaboration_raw2.csv"
         # df.to_csv(path, index=False, header=False)
         with ADW_connection_cx_oracle() as con:
@@ -93,8 +93,8 @@ default_args = {
     'depends_on_past': False,
     'email_on_failure': False,
     'email_on_retry': False,
-    'retries': 3,
-    'retry_delay': timedelta(minutes=3)
+    'retries': 1,
+    'retry_delay': timedelta(minutes=1)
 }
 
 with DAG('collaboration_collecting_data',

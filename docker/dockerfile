@@ -1,9 +1,15 @@
 # SOURCE: https://github.com/kdu9303/docker-airflow
 
-# BUILD: docker build --rm -t kdu9303/docker-airflow:version .
+# 고려사항
+# DB 연결을 위한 인스턴스 드라이버와 월렛 파일등은 dependencies/ 폴더안에 넣는다
+# 환경변수 경로 설정은 컨테이너 안의 환경에 맞게 경로를 설정한다
+# 컨테이너 환경은 dockerfile에서 설정, airflow 환경은 compose파일 안에서 설정한다
+
 # git clone https://github.com/kdu9303/docker-airflow.git . or directory
 
-# push:sudo docker push kdu9303/docker-airflow:version
+# custom build version: 0.1.2
+# build: docker build --rm -t kdu9303/docker-airflow:version .
+# push: sudo docker push kdu9303/docker-airflow:version
 
 # update version: docker build --tag kdu9303/docker-airflow:0.1.2 .
 # push:sudo docker push kdu9303/docker-airflow:0.1.2
@@ -11,9 +17,9 @@
 # docker-compose images 버전 수정할 것
 # docker-compose down && docker-compose up -d
 
-# latest version: 0.1.2
 
-FROM apache/airflow:2.2.0-python3.8
+# FROM apache/airflow:2.2.0-python3.8
+FROM apache/airflow:latest-python3.8
 USER root
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
@@ -30,7 +36,7 @@ ENV TZ=Asia/Seoul
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # instanct client 
-# TNS_ADMIN 변수 체크할 것
+# TNS_ADMIN 변수(instanct client 경로) 체크할 것
 # sqlnet.ora DIRECTORY 확인
 # docker 컨테이너 안에 sqlnet.ora 경로 변경 필수 
 COPY dependencies/instantclient_21_3 ./dependencies/instantclient_21_3

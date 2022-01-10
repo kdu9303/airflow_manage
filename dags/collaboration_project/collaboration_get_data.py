@@ -12,7 +12,7 @@ socket.setdefaulttimeout(300)  # 5 minutes
 
 
 # 콜라보 칼럼 커스터마이징
-def df_column_etl(df):
+def df_column_etl(df) -> pd.DataFrame:
 
     df['평가시기'] = f"{datetime.today().strftime('%Y')[2:]}\
         .{(int(datetime.today().strftime('%m')) - 2) // 3 + 1}Q"
@@ -198,6 +198,11 @@ def df_column_etl(df):
                                 '신경외과', '신경과'):
                         df.loc[row.Index, '진료부구분'] = '신경재활의학부'
 
+                    # 척추관절센터
+                    elif df.loc[row.Index, '피평가부서_RAW'].split('_')[2] == '신경외과_척추':
+                        df.loc[row.Index, '진료부구분'] = '척추관절센터'
+
+
                     # 심장내과부
                     elif df.loc[row.Index, '피평가부서_RAW'].split('_')[2] == '심장내과':
                         df.loc[row.Index, '진료부구분'] = '심장내과부'
@@ -253,8 +258,8 @@ def df_column_etl(df):
 
     return df
 
-
-def collaboration_return_data():
+# main
+def collaboration_main():
 
     RANGE = '!A2:F'  # 범위 지정
 

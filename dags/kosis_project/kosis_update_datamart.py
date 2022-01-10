@@ -22,7 +22,8 @@ def update_total_census_population(conn: ADW_connection_cx_oracle,
 
             cur.execute(query)
 
-            # 테이블 업데이트 후 SELECT 권한을 재부여하지않으면 OAC에서 데이터가 제대로 보이지않는다
+            # 테이블 업데이트 후 SELECT 권한을 재부여
+            # 권한을 재부여하지않으면 OAC에서 데이터가 제대로 보이지않음
             first_line = query.splitlines()[0]
             table_name = re.search(r'([DW\._])[^\s]+', first_line)[0]
             cur.execute(f"GRANT SELECT ON {table_name} to dwu01")

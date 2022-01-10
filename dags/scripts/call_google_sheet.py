@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+from typing import Tuple
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
 
@@ -20,14 +21,14 @@ def get_id(dept_values: str) -> list:
         try:
             dept_values_filtered.append(str(row).split('/')[5])
         except IndexError:
-            # 빈칸 건너뛰는 용도
+            # 구글시트 주소가 없는 부서는 건너뛴다
             pass
     return dept_values_filtered
 
 
-def call_google_sheet() -> dict:
+def call_google_sheet() -> Tuple[build, list]:
 
-    # IAM 및 관리자 -> 서비스 계정 -> JSON 키 새로 발급
+    # 재발급 과정: IAM 및 관리자 -> 서비스 계정 -> JSON 키 새로 발급
     credentials = service_account.Credentials.from_service_account_file(
         FILE_PATH + 'google_service_account_key.json',
         scopes=SCOPES)
@@ -39,6 +40,7 @@ def call_google_sheet() -> dict:
     sheet = service.spreadsheets()
 
     logging.getLogger('googleapicliet.discovery_cache').setLevel(logging.ERROR)
+
     # 부서 전체목록 불러오기(실제 적용)
     dim_dept = sheet.values().\
         get(spreadsheetId='14ps_HTgY1Y7ccW1zDMxl56AmorzZX-XmaTZYmyv4YLo',
@@ -47,8 +49,7 @@ def call_google_sheet() -> dict:
 
     SPREADSHEET_ID = get_id(dept_values)
 
-    # (테스트시트용)
+    # (테스트용)
     # global SPREADSHEET_ID
 
     return sheet, SPREADSHEET_ID
-

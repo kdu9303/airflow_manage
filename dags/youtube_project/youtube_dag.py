@@ -31,6 +31,7 @@ with DAG('youtube_collecting_data',
          max_active_runs=1,
          schedule_interval="0 9,20 * * 1-5",
          default_args=default_args,
+         concurrency=3,
          catchup=False
          ) as dag:
 
@@ -59,6 +60,6 @@ with DAG('youtube_collecting_data',
     )
 
     # task flow
-    upload_yutube_channel_info_task >> \
-        upload_yutube_video_info_task >> \
+    upload_yutube_channel_info_task
+    upload_yutube_video_info_task >> \
         upload_yutube_video_stats_task

@@ -60,8 +60,10 @@ x-airflow-common:
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__API__AUTH_BACKEND: 'airflow.api.auth.backend.basic_auth'
+    AIRFLOW__CORE__PARALLELISM: '64'
+    AIRFLOW__CELERY__WORKER_CONCURRENCY: 64
     # modified
-    _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:- apache-airflow-providers-google apache-airflow-providers-oracle}
+    _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:- apache-airflow-providers-slack apache-airflow-providers-google apache-airflow-providers-oracle}
   volumes:
     - ./dags:/opt/airflow/dags
     - ./logs:/opt/airflow/logs
@@ -260,7 +262,7 @@ services:
       airflow-init:
         condition: service_completed_successfully
 
-  # restart unhealty containers
+  # unhealty 컨테이너를 재시작한다
   autoheal:
     image: willfarrell/autoheal:latest
     tty: true
