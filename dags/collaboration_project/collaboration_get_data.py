@@ -4,6 +4,7 @@ import socket
 import pandas as pd
 import numpy as np
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 # 부서 리스트 불러오기
 from scripts.call_google_sheet import call_google_sheet
 
@@ -14,13 +15,21 @@ socket.setdefaulttimeout(300)  # 5 minutes
 # 콜라보 칼럼 커스터마이징
 def df_column_etl(df) -> pd.DataFrame:
 
-    df['평가시기'] = f"{datetime.today().strftime('%Y')[2:]}\
-        .{(int(datetime.today().strftime('%m')) - 2) // 3 + 1}Q"
     df['평가기준일'] = pd.to_datetime(datetime.today().replace(day=1,
                                                           hour=0,
                                                           minute=0,
                                                           second=0,
                                                           microsecond=0))
+
+    # 전분기 평가시기
+    prev_date = df.apply(
+        lambda x: x['평가기준일'] + relativedelta(months=-2), axis=1
+    )
+
+    df['평가시기'] = (
+        f"{prev_date.strftime('%Y')[2:]}."
+        f"{(int(prev_date.strftime('%m')) - 2) // 3 + 1}Q"
+    )
 
     df['평가부서기구'] = df['평가부서_RAW'].str.slice(0, 2)
 
@@ -254,6 +263,7 @@ def df_column_etl(df) -> pd.DataFrame:
                     df.loc[row.Index, '진료부구분'] = df.loc[row.Index, '피평가부서_RAW'].split('_')[1]
         except Exception as e:
             logging.info(e)
+            # 사용자 실수로 잘못 들어간 값은 건너뛴다
             pass
 
     return df
@@ -267,7 +277,9 @@ def collaboration_etl_process_main():
     sheet, SPREADSHEET_ID = call_google_sheet()
     values = []
 
-    logging.info(" ------------------------  콜라보 자료 취합 시작 ------------------------")
+    logging.info(
+        " ------------------------  콜라보 자료 취합 시작 ------------------------"
+        )
     try:
         cnt = 0
         for i in SPREADSHEET_ID:
